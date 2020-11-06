@@ -1,10 +1,14 @@
 from django.http import request
 from django.http.response import HttpResponseNotAllowed
 from django.shortcuts import render
+
 from rest_framework.response import Response
 from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.filters import SearchFilter, OrderingFilter
+from rest_framework.authentication import TokenAuthentication
+from rest_framework.permissions import AllowAny, DjangoModelPermissions, DjangoModelPermissionsOrAnonReadOnly, IsAdminUser, IsAuthenticatedOrReadOnly
+
 from django_filters.rest_framework import DjangoFilterBackend
 from .models import Customer, DataSheet, Document, Profession
 from .serializers import CustomerSerializer, ProfessionSerializer, DataSheetSerializer, DocumentSerializer
@@ -22,6 +26,7 @@ class CustomerViewSet(viewsets.ModelViewSet):
     # ordering_fields = '__all__' now you can filter with any field
     ordering = ['id']  # for default
     lookup_field = 'id'  # you can look up for any field but it must be unique it's for url
+    authentication_classes = [TokenAuthentication, ]
 
     def get_queryset(self):
         # id = self.request.query_params.get('id', None)
@@ -122,13 +127,19 @@ class CustomerViewSet(viewsets.ModelViewSet):
 class ProfessionViewSet(viewsets.ModelViewSet):
     queryset = Profession.objects.all()
     serializer_class = ProfessionSerializer
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAdminUser]
 
 
 class DataSheetViewSet(viewsets.ModelViewSet):
     queryset = DataSheet.objects.all()
     serializer_class = DataSheetSerializer
+    permission_classes = [AllowAny]
 
 
 class DocumentViewSet(viewsets.ModelViewSet):
     queryset = Document.objects.all()
     serializer_class = DocumentSerializer
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [DjangoModelPermissionsOrAnonReadOnly]
+    # permission_classes = [DjangoModelPermissions]

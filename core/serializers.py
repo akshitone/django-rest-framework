@@ -16,7 +16,7 @@ class ProfessionSerializer(serializers.ModelSerializer):
 
 class CustomerSerializer(serializers.ModelSerializer):
     number_of_professions = serializers.SerializerMethodField()
-    data_sheet = DataSheetSerializer()  # Nested Serializer
+    data_sheet = DataSheetSerializer(read_only=True)  # Nested Serializer
     # data_sheet = serializers.PrimaryKeyRelatedField(read_only=True)
     # data_sheet = serializers.SerializerMethodField()
     # data_sheet = serializers.StringRelatedField()
